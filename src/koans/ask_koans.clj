@@ -2,12 +2,12 @@
   (:gen-class
    :name koans.askLambda
    :methods [[handleLambda [java.util.Map] java.util.Map]])
-  (:use [koans.koan-dao]
-        [koans.utils]))
+  (:require [koans.koan-dao :as dao]
+            [koans.utils :as utils]))
 
 
 (defmulti handle-intent
-  (fn [req] (-> req extract-intent-name keyword)))
+  (fn [req] (-> req utils/extract-intent-name keyword)))
 
 (defmethod handle-intent :AMAZON.StopIntent [request]
   ["Okay, Stopping." true])
@@ -17,14 +17,14 @@
 
 
 (defmethod handle-intent :AMAZON.HelpIntent [_]
-  [help-text false])
+  [utils/help-text false])
 
 (defmethod handle-intent :default [_]
-  [help-text false])
+  [utils/help-text false])
 
 
 (defmethod handle-intent :AskKoanIntent [request]
-  [(get zen-koans (inc (rand-int total))) false])
+  [(dao/getKoan) false])
 
 
 (defn -handleLambda
@@ -32,4 +32,4 @@
   Alexa passes in its input as json (transparently parsed to a Map).
   The expected output is Alexa response in the form of a Map (which too will be converted to json by Jackson under the hood)."
   [obj input]
-  (apply create-simple-response  (handle-intent input)))
+  (apply utils/create-simple-response  (handle-intent input)))
