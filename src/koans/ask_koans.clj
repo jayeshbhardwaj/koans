@@ -24,7 +24,7 @@
 
 
 (defmethod handle-intent :AskKoanIntent [request]
-  [(dao/getKoan) false])
+  [(str "Here is a zen koan for you. " (dao/getKoan)) false])
 
 
 (defn -handleLambda
